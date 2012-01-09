@@ -1,3 +1,12 @@
+#
+# Script for watching an rss-feed of torrents and download
+# any matches to a special folder.
+#
+# By Anders Bennehag, 2012
+#
+# Licensed under GPL
+#
+
 
 import sys
 import optparse
@@ -7,12 +16,12 @@ import re
 import string
 import urllib
 
-feed = "http://rss.thepiratebay.org/208"
+feed = ""
 cachedFeed = "example.rss"
-searchString = "californication 720p eztv"
-minSize = 600
-maxSize = 1200
-torrentFolder = "torrents"
+searchString = ""
+minSize = 100
+maxSize = 100
+torrentFolder = ""
 
 configfile = ''
 dryrun = False
@@ -56,8 +65,9 @@ def rememberLastFeed():
 	
 def rememberNewestItem( newestItem ):
 	""" Save newest item to disk. """
-	f = open(rememberFile, 'w')
-	f.write( newestItem )
+	if not dryrun:
+		f = open(rememberFile, 'w')
+		f.write( newestItem )
 
 def convertSearchStringToRegExp( searchString ):
 	regExp = string.replace( searchString, " ", ".*?") 
@@ -87,10 +97,11 @@ def readConfig( filename ):
 	config = ConfigParser.RawConfigParser()
 	config.read( filename )
 	
-	feed = config.get("torrent","rss")
-	minsize = config.getint("torrent","min-size")
-	maxsize = config.getint("torrent","max-size")
+	global searchString,feed,minSize,maxSize,torrentFolder
 	searchString = config.get("torrent","search-string")
+	feed = config.get("torrent","rss")
+	minSize = config.getint("torrent","min-size")
+	maxSize = config.getint("torrent","max-size")
 	torrentFolder = config.get("torrent","folder")
 	
 if __name__ == '__main__':
@@ -101,12 +112,22 @@ if __name__ == '__main__':
 	
 	(options, args) = parser.parse_args()
 	
-	if len(sys.argv)<2:
+	if len(sys.argv)<2 :
 		parser.print_help()
 		sys.exit()
 	
 	dryrun = options.dryrun
-	readConfig(options.configfile)	
+	readConfig(options.configfile)
+	
+	
+	print "Searching for "+searchString
+	print "in "+feed	
+	print "Size between "+str(minSize)+" and "+str(maxSize)+"Mb"
+	print ""
+	
+	if searchString=="" or feed=="":
+		parser.print_help()
+		sys.exit()
 	
 	rememberFile = "lastfile_"+searchString.replace(" ","_")+".txt"
 	parseFeed()
