@@ -1,7 +1,7 @@
 Script for watching an rss-feed of torrents and download
 any matches to a special folder.
 
-Licensed under GPL.
+Written by Anders Bennehag and licensed under GPL.
 
 To run the program, create a config-file bicycles.ini:
 	[torrent]
@@ -13,3 +13,5 @@ To run the program, create a config-file bicycles.ini:
 
 and then start rssdownloader with 
 	python rssdownloader.py -c bicycles.ini
+
+The program will look through the feed once and put matching new torrents in the designated folder after which it is done. It is not a daemon which is why it must be scheduled with cron.

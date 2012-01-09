@@ -31,9 +31,11 @@ lastItem = None
 
 def parseFeed():
 	
-	d = feedparser.parse(cachedFeed)
+	d = feedparser.parse(feed)
 
 	print "Number of items in rss-feed is "+str(len(d.entries))
+	if len(d.entries)==0:
+		sys.exit()
 	
 	lastItem = rememberLastFeed()
 	rememberNewestItem( d.entries[0]['title'] )
